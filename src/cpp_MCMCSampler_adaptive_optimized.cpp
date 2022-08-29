@@ -96,11 +96,14 @@ double pot_MALA(arma::vec R,
   
   double penalty_term = mean(Pfn) * mean(Nfn);
   
+  double dpen = 2.0;
+  
   double pot_prior = ((c_11+c_12) / (tau1sq * delta_sq)) +
     ((c_21+c_22) / (tau2sq * delta_sq)) +
     ((2 * M * logtau1) - (logtau1 - log(1 + tau1sq))) +
     ((2 * M * logtau2) - (logtau2 - log(1 + tau2sq))) +
-    (((1.0 + pen_param) * penalty_term) + (0.5 * pow(kappa, 2.0)));
+    ((pen_param * penalty_term) + ((dpen + 1) * log(pen_param + 1)) - (dpen * log(pen_param)));
+    //(((1.0 + pen_param) * penalty_term) + (0.5 * pow(kappa, 2.0)));
     //((-0.5 * log(pen_param)) + pen_param + (0.5 * log(1 + (penalty_term / pen_param))));
   
   // Last line = prior for log(pen_param)
@@ -216,7 +219,9 @@ arma::vec grad_MALA(arma::vec R,
   // arma::vec grad_total = grad_lik + grad_prior + 
   //   ((0.5 / (pen_param + penalty_term)) * grad_prior_penalty);
   
-  arma::vec grad_total = grad_lik + grad_prior + ((1.0 + pen_param) * grad_prior_penalty);
+  double dpen = 2.0;
+  
+  arma::vec grad_total = grad_lik + grad_prior + (pen_param * grad_prior_penalty);
         
 // Construct gradient wrt pen_param
 
@@ -225,7 +230,9 @@ arma::vec grad_MALA(arma::vec R,
   // double grad_pen = (2 * pow(pen_param, 2.0) * penalty_term) - 
   //   ((1 - pow(pen_param, 2.0)) / (1 + pow(pen_param, 2.0)));
   
-  double grad_pen = (pen_param * penalty_term) + kappa;
+  //double grad_pen = (pen_param * penalty_term) + kappa;
+  
+  double grad_pen = (pen_param * penalty_term) - dpen + ((dpen + 1) * pen_param / (1 + pen_param));
   
   arma::vec grad_pen_vec(1, fill::zeros);
   grad_pen_vec(0) = grad_pen;
