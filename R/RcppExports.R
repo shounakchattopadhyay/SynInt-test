@@ -2,30 +2,30 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 random_gamma <- function(a) {
-    .Call(`_SynInt-test_random_gamma`, a)
+    .Call(`_SynIntTest_random_gamma`, a)
 }
 
 sigmasq_sampler <- function(R, n) {
-    .Call(`_SynInt-test_sigmasq_sampler`, R, n)
+    .Call(`_SynIntTest_sigmasq_sampler`, R, n)
 }
 
 maineffects_sampler <- function(R, X, Psi_inv, sigma_sq) {
-    .Call(`_SynInt-test_maineffects_sampler`, R, X, Psi_inv, sigma_sq)
+    .Call(`_SynIntTest_maineffects_sampler`, R, X, Psi_inv, sigma_sq)
 }
 
 pot_MALA <- function(R, X1, X2, param, S1, S2, sigma_sq, delta_sq) {
-    .Call(`_SynInt-test_pot_MALA`, R, X1, X2, param, S1, S2, sigma_sq, delta_sq)
+    .Call(`_SynIntTest_pot_MALA`, R, X1, X2, param, S1, S2, sigma_sq, delta_sq)
 }
 
 grad_MALA <- function(R, X1, X2, param, S1, S2, sigma_sq, delta_sq) {
-    .Call(`_SynInt-test_grad_MALA`, R, X1, X2, param, S1, S2, sigma_sq, delta_sq)
+    .Call(`_SynIntTest_grad_MALA`, R, X1, X2, param, S1, S2, sigma_sq, delta_sq)
 }
 
 sq_sampler <- function(R, X1, X2, S1, S2, sigma_sq, delta_sq, old_param, eps_MALA, precond_mat, precond_mat_inv, L_HMC) {
-    .Call(`_SynInt-test_sq_sampler`, R, X1, X2, S1, S2, sigma_sq, delta_sq, old_param, eps_MALA, precond_mat, precond_mat_inv, L_HMC)
+    .Call(`_SynIntTest_sq_sampler`, R, X1, X2, S1, S2, sigma_sq, delta_sq, old_param, eps_MALA, precond_mat, precond_mat_inv, L_HMC)
 }
 
 SIDsampler_draws_adaptive_optimized <- function(y, ME_mat, IE_list, eps_MALA, c_HMC, L_HMC, MC, n, p, p_cov, SigmaME, SigmaME_inv, SigmaInt, SigmaInt_inv, ME_nspl, IE_nspl, cutoff, map_k_to_uv, zero_ind, accept_low, accept_high, accept_scale, a_lamb, b_lamb, init_values, precond) {
-    .Call(`_SynInt-test_SIDsampler_draws_adaptive_optimized`, y, ME_mat, IE_list, eps_MALA, c_HMC, L_HMC, MC, n, p, p_cov, SigmaME, SigmaME_inv, SigmaInt, SigmaInt_inv, ME_nspl, IE_nspl, cutoff, map_k_to_uv, zero_ind, accept_low, accept_high, accept_scale, a_lamb, b_lamb, init_values, precond)
+    .Call(`_SynIntTest_SIDsampler_draws_adaptive_optimized`, y, ME_mat, IE_list, eps_MALA, c_HMC, L_HMC, MC, n, p, p_cov, SigmaME, SigmaME_inv, SigmaInt, SigmaInt_inv, ME_nspl, IE_nspl, cutoff, map_k_to_uv, zero_ind, accept_low, accept_high, accept_scale, a_lamb, b_lamb, init_values, precond)
 }
 
