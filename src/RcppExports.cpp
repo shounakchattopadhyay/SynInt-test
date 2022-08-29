@@ -13,7 +13,7 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 
 // random_gamma
 double random_gamma(double a);
-RcppExport SEXP _SynInt_random_gamma(SEXP aSEXP) {
+RcppExport SEXP _SynInt-test_random_gamma(SEXP aSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -24,7 +24,7 @@ END_RCPP
 }
 // sigmasq_sampler
 double sigmasq_sampler(arma::vec R, int n);
-RcppExport SEXP _SynInt_sigmasq_sampler(SEXP RSEXP, SEXP nSEXP) {
+RcppExport SEXP _SynInt-test_sigmasq_sampler(SEXP RSEXP, SEXP nSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -36,7 +36,7 @@ END_RCPP
 }
 // maineffects_sampler
 arma::vec maineffects_sampler(arma::vec R, arma::mat X, arma::mat Psi_inv, double sigma_sq);
-RcppExport SEXP _SynInt_maineffects_sampler(SEXP RSEXP, SEXP XSEXP, SEXP Psi_invSEXP, SEXP sigma_sqSEXP) {
+RcppExport SEXP _SynInt-test_maineffects_sampler(SEXP RSEXP, SEXP XSEXP, SEXP Psi_invSEXP, SEXP sigma_sqSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -50,7 +50,7 @@ END_RCPP
 }
 // pot_MALA
 double pot_MALA(arma::vec R, arma::mat X1, arma::mat X2, arma::vec param, arma::mat S1, arma::mat S2, double sigma_sq, double delta_sq);
-RcppExport SEXP _SynInt_pot_MALA(SEXP RSEXP, SEXP X1SEXP, SEXP X2SEXP, SEXP paramSEXP, SEXP S1SEXP, SEXP S2SEXP, SEXP sigma_sqSEXP, SEXP delta_sqSEXP) {
+RcppExport SEXP _SynInt-test_pot_MALA(SEXP RSEXP, SEXP X1SEXP, SEXP X2SEXP, SEXP paramSEXP, SEXP S1SEXP, SEXP S2SEXP, SEXP sigma_sqSEXP, SEXP delta_sqSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -68,7 +68,7 @@ END_RCPP
 }
 // grad_MALA
 arma::vec grad_MALA(arma::vec R, arma::mat X1, arma::mat X2, arma::vec param, arma::mat S1, arma::mat S2, double sigma_sq, double delta_sq);
-RcppExport SEXP _SynInt_grad_MALA(SEXP RSEXP, SEXP X1SEXP, SEXP X2SEXP, SEXP paramSEXP, SEXP S1SEXP, SEXP S2SEXP, SEXP sigma_sqSEXP, SEXP delta_sqSEXP) {
+RcppExport SEXP _SynInt-test_grad_MALA(SEXP RSEXP, SEXP X1SEXP, SEXP X2SEXP, SEXP paramSEXP, SEXP S1SEXP, SEXP S2SEXP, SEXP sigma_sqSEXP, SEXP delta_sqSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -86,7 +86,7 @@ END_RCPP
 }
 // sq_sampler
 Rcpp::List sq_sampler(arma::vec R, arma::mat X1, arma::mat X2, arma::mat S1, arma::mat S2, double sigma_sq, double delta_sq, arma::vec old_param, double eps_MALA, arma::mat precond_mat, arma::mat precond_mat_inv, int L_HMC);
-RcppExport SEXP _SynInt_sq_sampler(SEXP RSEXP, SEXP X1SEXP, SEXP X2SEXP, SEXP S1SEXP, SEXP S2SEXP, SEXP sigma_sqSEXP, SEXP delta_sqSEXP, SEXP old_paramSEXP, SEXP eps_MALASEXP, SEXP precond_matSEXP, SEXP precond_mat_invSEXP, SEXP L_HMCSEXP) {
+RcppExport SEXP _SynInt-test_sq_sampler(SEXP RSEXP, SEXP X1SEXP, SEXP X2SEXP, SEXP S1SEXP, SEXP S2SEXP, SEXP sigma_sqSEXP, SEXP delta_sqSEXP, SEXP old_paramSEXP, SEXP eps_MALASEXP, SEXP precond_matSEXP, SEXP precond_mat_invSEXP, SEXP L_HMCSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -108,7 +108,7 @@ END_RCPP
 }
 // SIDsampler_draws_adaptive_optimized
 Rcpp::List SIDsampler_draws_adaptive_optimized(arma::vec y, arma::mat ME_mat, arma::cube IE_list, arma::vec eps_MALA, double c_HMC, int L_HMC, int MC, int n, int p, int p_cov, arma::mat SigmaME, arma::mat SigmaME_inv, arma::mat SigmaInt, arma::mat SigmaInt_inv, int ME_nspl, int IE_nspl, int cutoff, arma::mat map_k_to_uv, arma::vec zero_ind, double accept_low, double accept_high, double accept_scale, double a_lamb, double b_lamb, Rcpp::List init_values, int precond);
-RcppExport SEXP _SynInt_SIDsampler_draws_adaptive_optimized(SEXP ySEXP, SEXP ME_matSEXP, SEXP IE_listSEXP, SEXP eps_MALASEXP, SEXP c_HMCSEXP, SEXP L_HMCSEXP, SEXP MCSEXP, SEXP nSEXP, SEXP pSEXP, SEXP p_covSEXP, SEXP SigmaMESEXP, SEXP SigmaME_invSEXP, SEXP SigmaIntSEXP, SEXP SigmaInt_invSEXP, SEXP ME_nsplSEXP, SEXP IE_nsplSEXP, SEXP cutoffSEXP, SEXP map_k_to_uvSEXP, SEXP zero_indSEXP, SEXP accept_lowSEXP, SEXP accept_highSEXP, SEXP accept_scaleSEXP, SEXP a_lambSEXP, SEXP b_lambSEXP, SEXP init_valuesSEXP, SEXP precondSEXP) {
+RcppExport SEXP _SynInt-test_SIDsampler_draws_adaptive_optimized(SEXP ySEXP, SEXP ME_matSEXP, SEXP IE_listSEXP, SEXP eps_MALASEXP, SEXP c_HMCSEXP, SEXP L_HMCSEXP, SEXP MCSEXP, SEXP nSEXP, SEXP pSEXP, SEXP p_covSEXP, SEXP SigmaMESEXP, SEXP SigmaME_invSEXP, SEXP SigmaIntSEXP, SEXP SigmaInt_invSEXP, SEXP ME_nsplSEXP, SEXP IE_nsplSEXP, SEXP cutoffSEXP, SEXP map_k_to_uvSEXP, SEXP zero_indSEXP, SEXP accept_lowSEXP, SEXP accept_highSEXP, SEXP accept_scaleSEXP, SEXP a_lambSEXP, SEXP b_lambSEXP, SEXP init_valuesSEXP, SEXP precondSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -144,17 +144,17 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_SynInt_random_gamma", (DL_FUNC) &_SynInt_random_gamma, 1},
-    {"_SynInt_sigmasq_sampler", (DL_FUNC) &_SynInt_sigmasq_sampler, 2},
-    {"_SynInt_maineffects_sampler", (DL_FUNC) &_SynInt_maineffects_sampler, 4},
-    {"_SynInt_pot_MALA", (DL_FUNC) &_SynInt_pot_MALA, 8},
-    {"_SynInt_grad_MALA", (DL_FUNC) &_SynInt_grad_MALA, 8},
-    {"_SynInt_sq_sampler", (DL_FUNC) &_SynInt_sq_sampler, 12},
-    {"_SynInt_SIDsampler_draws_adaptive_optimized", (DL_FUNC) &_SynInt_SIDsampler_draws_adaptive_optimized, 26},
+    {"_SynInt-test_random_gamma", (DL_FUNC) &_SynInt-test_random_gamma, 1},
+    {"_SynInt-test_sigmasq_sampler", (DL_FUNC) &_SynInt-test_sigmasq_sampler, 2},
+    {"_SynInt-test_maineffects_sampler", (DL_FUNC) &_SynInt-test_maineffects_sampler, 4},
+    {"_SynInt-test_pot_MALA", (DL_FUNC) &_SynInt-test_pot_MALA, 8},
+    {"_SynInt-test_grad_MALA", (DL_FUNC) &_SynInt-test_grad_MALA, 8},
+    {"_SynInt-test_sq_sampler", (DL_FUNC) &_SynInt-test_sq_sampler, 12},
+    {"_SynInt-test_SIDsampler_draws_adaptive_optimized", (DL_FUNC) &_SynInt-test_SIDsampler_draws_adaptive_optimized, 26},
     {NULL, NULL, 0}
 };
 
-RcppExport void R_init_SynInt(DllInfo *dll) {
+RcppExport void R_init_SynInt-test(DllInfo *dll) {
     R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
     R_useDynamicSymbols(dll, FALSE);
 }
