@@ -50,7 +50,8 @@ double pot_MALA(arma::vec R,
                 arma::mat S1, 
                 arma::mat S2, 
                 double sigma_sq,
-                double delta_sq){
+                double delta_sq,
+                double pen_param){
   
   int M = X1.n_cols;
   int n = X1.n_rows;
@@ -60,12 +61,12 @@ double pot_MALA(arma::vec R,
   arma::vec phi1 = param(span((2*M), (3*M)-1));
   arma::vec phi2 = param(span((3*M), (4*M) - 1));
   
-  double kappa = param(4*M);
-  double pen_param = exp(kappa);
+  // double kappa = param(4*M);
+  // double pen_param = exp(kappa);
   
-  double logtau1 = param(4*M + 1);
+  double logtau1 = param(4*M);
   double tau1sq = exp(2 * logtau1);
-  double logtau2 = param(4*M + 2);
+  double logtau2 = param(4*M + 1);
   double tau2sq = exp(2 * logtau2);
     
   arma::vec mainpart11 = X1 * theta1;
@@ -96,13 +97,12 @@ double pot_MALA(arma::vec R,
   
   double penalty_term = mean(Pfn) * mean(Nfn);
   
-  double dpen = 5.0;
-  
   double pot_prior = ((c_11+c_12) / (tau1sq * delta_sq)) +
     ((c_21+c_22) / (tau2sq * delta_sq)) +
     ((2 * M * logtau1) - (logtau1 - log(1 + tau1sq))) +
     ((2 * M * logtau2) - (logtau2 - log(1 + tau2sq))) +
-    ((pen_param * penalty_term) + ((dpen + 1) * log(pen_param + 1)) - (dpen * log(pen_param)));
+    (pen_param * penalty_term);
+    // ((pen_param * penalty_term) + ((dpen + 1) * log(pen_param + 1)) - (dpen * log(pen_param)));
     //(((1.0 + pen_param) * penalty_term) + (0.5 * pow(kappa, 2.0)));
     //((-0.5 * log(pen_param)) + pen_param + (0.5 * log(1 + (penalty_term / pen_param))));
   
@@ -122,7 +122,8 @@ arma::vec grad_MALA(arma::vec R,
                     arma::mat S1, 
                     arma::mat S2, 
                     double sigma_sq,
-                    double delta_sq){
+                    double delta_sq,
+                    double pen_param){
   
   int M = X1.n_cols;
   int n = X1.n_rows;
@@ -132,12 +133,12 @@ arma::vec grad_MALA(arma::vec R,
   arma::vec phi1 = param(span((2*M), (3*M)-1));
   arma::vec phi2 = param(span((3*M), (4*M) - 1));
   
-  double kappa = param(4*M);
-  double pen_param = exp(kappa);
+  // double kappa = param(4*M);
+  // double pen_param = exp(kappa);
   
-  double logtau1 = param(4*M + 1);
+  double logtau1 = param(4*M);
   double tau1sq = exp(2 * logtau1);
-  double logtau2 = param(4*M + 2);
+  double logtau2 = param(4*M + 1);
   double tau2sq = exp(2 * logtau2);
   
   arma::vec mainpart11 = X1 * theta1;
@@ -219,8 +220,6 @@ arma::vec grad_MALA(arma::vec R,
   // arma::vec grad_total = grad_lik + grad_prior + 
   //   ((0.5 / (pen_param + penalty_term)) * grad_prior_penalty);
   
-  double dpen = 5.0;
-  
   arma::vec grad_total = grad_lik + grad_prior + (pen_param * grad_prior_penalty);
         
 // Construct gradient wrt pen_param
@@ -232,10 +231,10 @@ arma::vec grad_MALA(arma::vec R,
   
   //double grad_pen = (pen_param * penalty_term) + kappa;
   
-  double grad_pen = (pen_param * penalty_term) - dpen + ((dpen + 1) * pen_param / (1 + pen_param));
-  
-  arma::vec grad_pen_vec(1, fill::zeros);
-  grad_pen_vec(0) = grad_pen;
+  // double grad_pen = (pen_param * penalty_term) - dpen + ((dpen + 1) * pen_param / (1 + pen_param));
+  // 
+  // arma::vec grad_pen_vec(1, fill::zeros);
+  // grad_pen_vec(0) = grad_pen;
   
   ///// Construct grad_tau1 and grad_tau2
   
@@ -258,7 +257,8 @@ arma::vec grad_MALA(arma::vec R,
   arma::vec grad_tau2_vec(1, fill::zeros);
   grad_tau2_vec(0) = grad_tau2;
           
-  return join_cols(grad_total, grad_pen_vec, grad_tau1_vec, grad_tau2_vec);
+  // return join_cols(grad_total, grad_pen_vec, grad_tau1_vec, grad_tau2_vec);
+  return join_cols(grad_total, grad_tau1_vec, grad_tau2_vec);
   
 }
 
@@ -274,7 +274,8 @@ Rcpp::List sq_sampler(arma::vec R,
                       double eps_MALA,
                       arma::mat precond_mat,
                       arma::mat precond_mat_inv,
-                      int L_HMC){
+                      int L_HMC,
+                      double pen_param){
   
   int M = old_param.n_elem;
   
@@ -291,7 +292,8 @@ Rcpp::List sq_sampler(arma::vec R,
   
   new_rho = new_rho - (0.5 * eps_MALA * grad_MALA(R, X1, X2,
                                                   new_param, 
-                                                  S1, S2, sigma_sq, delta_sq));
+                                                  S1, S2, sigma_sq, delta_sq,
+                                                  pen_param));
   
   for(int l_ind=0; l_ind < L_HMC; ++l_ind){
     
@@ -307,7 +309,8 @@ Rcpp::List sq_sampler(arma::vec R,
       
       new_rho = new_rho - (eps_MALA * grad_MALA(R, X1, X2,
                                                 new_param,
-                                                S1, S2, sigma_sq, delta_sq));
+                                                S1, S2, sigma_sq, delta_sq,
+                                                pen_param));
       
     }
     
@@ -317,19 +320,20 @@ Rcpp::List sq_sampler(arma::vec R,
   
   new_rho = new_rho - (0.5 * eps_MALA * grad_MALA(R, X1, X2,
                                                   new_param, 
-                                                  S1, S2, sigma_sq, delta_sq));
+                                                  S1, S2, sigma_sq, delta_sq,
+                                                  pen_param));
   
   new_rho = -new_rho; //To maintain reversibility
   
   double current_U = pot_MALA(R, X1, X2, current_param,  
-                              S1, S2, sigma_sq, delta_sq);
+                              S1, S2, sigma_sq, delta_sq, pen_param);
   
   arma::mat current_K_mat = 0.5 * (current_rho.t() * (precond_mat_inv * current_rho));
   // double current_K = accu(square(current_rho))/(2 * pow(c_HMC, 2.0));
   double current_K = current_K_mat(0,0);
   
   double new_U = pot_MALA(R, X1, X2, new_param,  
-                          S1, S2, sigma_sq, delta_sq);
+                          S1, S2, sigma_sq, delta_sq, pen_param);
   
   arma::mat new_K_mat = 0.5 * (new_rho.t() * (precond_mat_inv * new_rho));
   // double new_K = accu(square(new_rho))/(2 * pow(c_HMC, 2.0));
@@ -398,7 +402,8 @@ Rcpp::List SIDsampler_draws_adaptive_optimized(arma::vec y,
                                                double a_lamb,
                                                double b_lamb,
                                                Rcpp::List init_values,
-                                               int precond){
+                                               int precond,
+                                               double pen_param){
   //Define storage matrices
   
   arma::vec alpha_stor(MC, fill::zeros);
@@ -424,7 +429,7 @@ Rcpp::List SIDsampler_draws_adaptive_optimized(arma::vec y,
   arma::vec IE_scale_deltasq(MC, fill::ones);
   arma::vec IE_scale_nu(MC, fill::ones);
   
-  arma::mat IE_pen(MC, K, fill::ones);
+  // arma::mat IE_pen(MC, K, fill::ones);
   
   arma::mat all_interactions(n, K, fill::zeros);
   
@@ -490,7 +495,7 @@ Rcpp::List SIDsampler_draws_adaptive_optimized(arma::vec y,
       
       //Initialize penalty parameter
       
-      IE_pen(0,k) = 1;
+      // IE_pen(0,k) = 1;
       
     }
     
@@ -591,9 +596,9 @@ Rcpp::List SIDsampler_draws_adaptive_optimized(arma::vec y,
           old_param(span(2*IE_nspl, (3*IE_nspl)-1)) = IE_pos_phi1.slice(k).row(m-1).t();
           old_param(span(3*IE_nspl, (4*IE_nspl)-1)) = IE_neg_phi2.slice(k).row(m-1).t();
           
-          old_param(4*IE_nspl) = log(IE_pen(m-1,k));
-          old_param(4*IE_nspl + 1) = log(IE_scale_tausq1(m-1,k)) / 2.0;
-          old_param(4*IE_nspl + 2) = log(IE_scale_tausq2(m-1,k)) / 2.0;
+          // old_param(4*IE_nspl) = log(IE_pen(m-1,k));
+          old_param(4*IE_nspl) = log(IE_scale_tausq1(m-1,k)) / 2.0;
+          old_param(4*IE_nspl + 1) = log(IE_scale_tausq2(m-1,k)) / 2.0;
           
           // Do the sampling
           
@@ -617,7 +622,8 @@ Rcpp::List SIDsampler_draws_adaptive_optimized(arma::vec y,
                                               eps_MALA(k),
                                               precond_k_init,
                                               precond_k_inv_init,
-                                              L_HMC);
+                                              L_HMC,
+                                              pen_param);
             
             accept_MALA(m,k) = sq_MALA_k["accept"];
             arma::vec sampled_param_k = sq_MALA_k["sampled_param"];
@@ -633,7 +639,8 @@ Rcpp::List SIDsampler_draws_adaptive_optimized(arma::vec y,
                                                  SigmaInt_inv,
                                                  SigmaInt_inv,
                                                  sigmasq_stor(m-1),
-                                                 IE_scale_deltasq(m-1));
+                                                 IE_scale_deltasq(m-1),
+                                                 pen_param);
             
             grad_sample_stor.slice(k).row(m) = sampled_grad_k.t();
             
@@ -673,7 +680,8 @@ Rcpp::List SIDsampler_draws_adaptive_optimized(arma::vec y,
                                               eps_MALA(k),
                                               precond_mat_stor.slice(k),
                                               precond_mat_inv_stor.slice(k),
-                                              L_HMC);
+                                              L_HMC,
+                                              pen_param);
             
             accept_MALA(m,k) = sq_MALA_k["accept"];
             arma::vec sampled_param_k = sq_MALA_k["sampled_param"];
@@ -689,7 +697,8 @@ Rcpp::List SIDsampler_draws_adaptive_optimized(arma::vec y,
                                                  SigmaInt_inv,
                                                  SigmaInt_inv,
                                                  sigmasq_stor(m-1),
-                                                 IE_scale_deltasq(m-1));
+                                                 IE_scale_deltasq(m-1),
+                                                 pen_param);
             
             grad_sample_stor.slice(k).row(m) = sampled_grad_k.t();
             
@@ -700,9 +709,9 @@ Rcpp::List SIDsampler_draws_adaptive_optimized(arma::vec y,
           IE_pos_phi1.slice(k).row(m) = whole_coeff_psi(span(2*len_psi, 3*len_psi-1)).t();
           IE_neg_phi2.slice(k).row(m) = whole_coeff_psi(span(3*len_psi, 4*len_psi-1)).t();
           
-          IE_pen(m,k) = exp(whole_coeff(4*len_psi));
-          IE_scale_tausq1(m,k) = exp(2.0 * whole_coeff(4*len_psi + 1));
-          IE_scale_tausq2(m,k) = exp(2.0 * whole_coeff(4*len_psi + 2));
+          // IE_pen(m,k) = exp(whole_coeff(4*len_psi));
+          IE_scale_tausq1(m,k) = exp(2.0 * whole_coeff(4*len_psi));
+          IE_scale_tausq2(m,k) = exp(2.0 * whole_coeff(4*len_psi + 1));
           
           // Update the interaction matrix
           
@@ -850,7 +859,7 @@ Rcpp::List SIDsampler_draws_adaptive_optimized(arma::vec y,
                               Rcpp::Named("IE_list") = IE_list,
                               Rcpp::Named("Accept_Prop") = accept_MALA,
                               Rcpp::Named("HMC_epsilon") = eps_MALA,
-                              Rcpp::Named("IE_penalty") = IE_pen,
+                              // Rcpp::Named("IE_penalty") = IE_pen,
                               Rcpp::Named("IE_deltasq") = IE_scale_deltasq,
                               Rcpp::Named("precond_mat_stor") = precond_mat_stor);
   }else{
@@ -901,7 +910,7 @@ Rcpp::List SIDsampler_draws_adaptive_optimized(arma::vec y,
       
       //Initialize penalty parameter
       
-      IE_pen(0,k) = 1;
+      // IE_pen(0,k) = 1;
       
     }
     
@@ -999,9 +1008,9 @@ Rcpp::List SIDsampler_draws_adaptive_optimized(arma::vec y,
           old_param(span(2*IE_nspl, (3*IE_nspl)-1)) = IE_pos_phi1.slice(k).row(m-1).t();
           old_param(span(3*IE_nspl, (4*IE_nspl)-1)) = IE_neg_phi2.slice(k).row(m-1).t();
           
-          old_param(4*IE_nspl) = log(IE_pen(m-1,k));
-          old_param(4*IE_nspl + 1) = log(IE_scale_tausq1(m-1,k)) / 2.0;
-          old_param(4*IE_nspl + 2) = log(IE_scale_tausq2(m-1,k)) / 2.0;
+          // old_param(4*IE_nspl) = log(IE_pen(m-1,k));
+          old_param(4*IE_nspl) = log(IE_scale_tausq1(m-1,k)) / 2.0;
+          old_param(4*IE_nspl + 1) = log(IE_scale_tausq2(m-1,k)) / 2.0;
           
           // Do the sampling
           
@@ -1025,7 +1034,8 @@ Rcpp::List SIDsampler_draws_adaptive_optimized(arma::vec y,
                                               eps_MALA(k),
                                               precond_k_init,
                                               precond_k_inv_init,
-                                              L_HMC);
+                                              L_HMC,
+                                              pen_param);
             
             accept_MALA(m,k) = sq_MALA_k["accept"];
             arma::vec sampled_param_k = sq_MALA_k["sampled_param"];
@@ -1041,7 +1051,8 @@ Rcpp::List SIDsampler_draws_adaptive_optimized(arma::vec y,
                                                  SigmaInt_inv,
                                                  SigmaInt_inv,
                                                  sigmasq_stor(m-1),
-                                                 IE_scale_deltasq(m-1));
+                                                 IE_scale_deltasq(m-1),
+                                                 pen_param);
             
             grad_sample_stor.slice(k).row(m) = sampled_grad_k.t();
             
@@ -1081,7 +1092,8 @@ Rcpp::List SIDsampler_draws_adaptive_optimized(arma::vec y,
                                               eps_MALA(k),
                                               precond_mat_stor.slice(k),
                                               precond_mat_inv_stor.slice(k),
-                                              L_HMC);
+                                              L_HMC,
+                                              pen_param);
             
             accept_MALA(m,k) = sq_MALA_k["accept"];
             arma::vec sampled_param_k = sq_MALA_k["sampled_param"];
@@ -1097,7 +1109,8 @@ Rcpp::List SIDsampler_draws_adaptive_optimized(arma::vec y,
                                                  SigmaInt_inv,
                                                  SigmaInt_inv,
                                                  sigmasq_stor(m-1),
-                                                 IE_scale_deltasq(m-1));
+                                                 IE_scale_deltasq(m-1),
+                                                 pen_param);
             
             grad_sample_stor.slice(k).row(m) = sampled_grad_k.t();
             
@@ -1108,9 +1121,9 @@ Rcpp::List SIDsampler_draws_adaptive_optimized(arma::vec y,
           IE_pos_phi1.slice(k).row(m) = whole_coeff_psi(span(2*len_psi, 3*len_psi-1)).t();
           IE_neg_phi2.slice(k).row(m) = whole_coeff_psi(span(3*len_psi, 4*len_psi-1)).t();
           
-          IE_pen(m,k) = exp(whole_coeff(4*len_psi));
-          IE_scale_tausq1(m,k) = exp(2.0 * whole_coeff(4*len_psi + 1));
-          IE_scale_tausq2(m,k) = exp(2.0 * whole_coeff(4*len_psi + 2));
+          // IE_pen(m,k) = exp(whole_coeff(4*len_psi));
+          IE_scale_tausq1(m,k) = exp(2.0 * whole_coeff(4*len_psi));
+          IE_scale_tausq2(m,k) = exp(2.0 * whole_coeff(4*len_psi + 1));
           
           // Update the interaction matrix
           
@@ -1257,7 +1270,7 @@ Rcpp::List SIDsampler_draws_adaptive_optimized(arma::vec y,
                               Rcpp::Named("IE_list") = IE_list,
                               Rcpp::Named("Accept_Prop") = accept_MALA,
                               Rcpp::Named("HMC_epsilon") = eps_MALA,
-                              Rcpp::Named("IE_penalty") = IE_pen,
+                              // Rcpp::Named("IE_penalty") = IE_pen,
                               Rcpp::Named("IE_deltasq") = IE_scale_deltasq,
                               Rcpp::Named("precond_mat_stor") = precond_mat_stor);
     

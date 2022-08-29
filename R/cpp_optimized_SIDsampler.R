@@ -416,7 +416,8 @@ SIMsampler<-function(y,
                      accept_low = 0.50,
                      accept_high = 0.60,
                      accept_scale = 0.8,
-                     precond = 0){
+                     precond = 0,
+                     pen_param = 5.0){
   
   library(MASS)
   library(splines)
@@ -599,7 +600,8 @@ SIMsampler<-function(y,
                                                   a_lamb,
                                                   b_lamb,
                                                   init_values,
-                                                  precond)
+                                                  precond,
+                                                  pen_param)
   
   print(noquote(paste("########## Sampling completed with MC = ", MC, " ########## ", sep = "")))
   
