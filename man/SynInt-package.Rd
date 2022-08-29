@@ -1,24 +1,24 @@
-\name{SynInt-package}
-\alias{SynInt-package}
-\alias{SynInt}
+\name{SynIntTest-package}
+\alias{SynIntTest-package}
+\alias{SynIntTest}
 \docType{package}
 \title{
-\packageTitle{SynInt}
+\packageTitle{SynIntTest}
 }
 \description{
-\packageDescription{SynInt}
+\packageDescription{SynIntTest}
 }
 \details{
 
 The DESCRIPTION file:
-\packageDESCRIPTION{SynInt}
-\packageIndices{SynInt}
+\packageDESCRIPTION{SynIntTest}
+\packageIndices{SynIntTest}
 SIMsampler samples from the posterior distribution of the synergistic interaction model.
 }
 \author{
-\packageAuthor{SynInt}
+\packageAuthor{SynIntTest}
 
-Maintainer: \packageMaintainer{SynInt}
+Maintainer: \packageMaintainer{SynIntTest}
 }
 \references{
 [to be added]
