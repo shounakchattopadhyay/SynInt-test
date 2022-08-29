@@ -96,7 +96,7 @@ double pot_MALA(arma::vec R,
   
   double penalty_term = mean(Pfn) * mean(Nfn);
   
-  double dpen = 2.0;
+  double dpen = 5.0;
   
   double pot_prior = ((c_11+c_12) / (tau1sq * delta_sq)) +
     ((c_21+c_22) / (tau2sq * delta_sq)) +
@@ -219,7 +219,7 @@ arma::vec grad_MALA(arma::vec R,
   // arma::vec grad_total = grad_lik + grad_prior + 
   //   ((0.5 / (pen_param + penalty_term)) * grad_prior_penalty);
   
-  double dpen = 2.0;
+  double dpen = 5.0;
   
   arma::vec grad_total = grad_lik + grad_prior + (pen_param * grad_prior_penalty);
         
