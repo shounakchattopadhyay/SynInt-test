@@ -24,12 +24,15 @@ arma::vec rejection_sampler(arma::mat X1,
   //Returns the log(1 - exp(-c(y) * kappa)) for rejected samples y.
   
   int mask = 0;
-  int M = X1.n_rows;
+  int M = X1.n_cols;
   arma::vec penalty_stor(1, fill::zeros);
+  penalty_stor(0) = -1;                 //First element, to be discarded later
   arma::vec mean_vec(M, fill::zeros);
   
   arma::mat C1 = delta_sq * tau1sq * cov1;
   arma::mat C2 = delta_sq * tau2sq * cov2;
+  
+  mask = 0;                           //Define mask variable for rejection sampling
   
   while(mask == 0){
     
@@ -67,10 +70,12 @@ arma::vec rejection_sampler(arma::mat X1,
     
   }
   
-  int l = penalty_stor.n_elem;
-  arma::vec penalty_stor_new = penalty_stor.subvec(1, l-1);
+  // Rcpp::Rcout << "Rejection Fine!" << std::endl;
   
-  return penalty_stor_new;
+  return penalty_stor;      //Has -1 at the beginning
+  
+  //Length of penalty_stor = 1 if no rejections
+  //Otherwise, length of penalty_stor >= 2.
   
 }
 
@@ -102,6 +107,8 @@ arma::vec maineffects_sampler(arma::vec R,
   
   arma::mat sampled_ME_coeff = mvnrnd(betaMean, betaVar, 1);
   return sampled_ME_coeff.col(0);
+  
+  //Make this faster using Rue's algorithm.
   
 }
 
@@ -160,7 +167,17 @@ double pot_MALA(arma::vec R,
   double c_22 = c_22mat(0,0);
   
   double penalty_term = mean(Pfn) * mean(Nfn);
-  arma::vec one_vec = ones(l);
+  
+  double pot_rej = 0;
+  if(l >= 2)
+  {
+    
+    arma::vec new_rej_pen = rej_pen.subvec(1, l-1);
+    arma::vec one_vec = ones(l-1);
+    
+    pot_rej = -accu(log(one_vec - exp(-pen_param * new_rej_pen)));
+    
+  }
   
   double pot_prior = ((c_11+c_12) / (tau1sq * delta_sq)) +    //PE from p(theta1, phi1)
     ((c_21+c_22) / (tau2sq * delta_sq)) +                     //PE from p(theta2, phi2)
@@ -168,9 +185,11 @@ double pot_MALA(arma::vec R,
     ((2 * M * logtau2) - (logtau2 - log(1 + tau2sq))) +       //PE from p(tau2^2)
     (pen_param * penalty_term) +                              //PE from penalty
     (0.5 * pow(kappa, 2.0)) +                                 //PE from prior on penalty; log(penalty) ~ N(0,1)
-    (-accu(log(one_vec - exp(-pen_param * rej_pen))));         //PE from rejected samples
+    (pot_rej);         //PE from rejected samples
   
   double pot_total = pot_lik + pot_prior;
+  
+  // Rcpp::Rcout << "PE fine" << std::endl;
   
   return pot_total;
   
@@ -257,11 +276,19 @@ arma::vec grad_MALA(arma::vec R,
   
   // Construct gradient wrt pen_param
   
-  arma::vec one_vec = ones(l);
+  double pot_grad_rej = 0;
+  if(l >= 2)
+  {
+    
+    arma::vec new_rej_pen = rej_pen.subvec(1, l-1);
+    arma::vec one_vec = ones(l-1);
+    pot_grad_rej = -pen_param * accu(new_rej_pen / (exp(pen_param * new_rej_pen) - one_vec));
+    
+  }
   
   double grad_pen = (pen_param * penalty_term) +            //Penalty
     (log(pen_param)) +                      //Prior on penalty  
-    (- pen_param * accu(rej_pen / (exp(pen_param * rej_pen) - one_vec)));
+    (pot_grad_rej); //Rejection sampling
   
   arma::vec grad_pen_vec(1, fill::zeros);
   grad_pen_vec(0) = grad_pen;
@@ -287,6 +314,8 @@ arma::vec grad_MALA(arma::vec R,
   arma::vec grad_tau2_vec(1, fill::zeros);
   grad_tau2_vec(0) = grad_tau2;
   
+  // Rcpp::Rcout << "Gradient Fine" << std::endl;
+  
   return join_cols(grad_total, grad_pen_vec, grad_tau1_vec, grad_tau2_vec);
   
 }
@@ -310,7 +339,6 @@ Rcpp::List sq_sampler(arma::vec R,
   
   arma::vec new_param = old_param;
   arma::mat sig1;
-  // sig1 = eye(M,M) * pow(c_HMC, 2.0);
   sig1 = precond_mat;
   arma::vec new_rho = mvnrnd(vec(M, fill::zeros), sig1, 1);
   
@@ -458,6 +486,7 @@ Rcpp::List SIDsampler_draws_adaptive_optimized(arma::vec y,
   arma::vec IE_scale_nu(MC, fill::ones);
   
   arma::mat IE_pen(MC, K, fill::ones);
+  arma::mat IE_pen_stor(MC, K, fill::ones);
   
   arma::mat all_interactions(n, K, fill::zeros);
   
@@ -730,7 +759,8 @@ Rcpp::List SIDsampler_draws_adaptive_optimized(arma::vec y,
           arma::vec Ppart = Ppart1 % Ppart2;
           arma::vec Npart = Npart1 % Npart2;
           
-          all_interactions.col(k) = Ppart - Npart; 
+          all_interactions.col(k) = Ppart - Npart;
+          IE_pen_stor(m,k) = mean(Ppart) * mean(Npart);
           
         }
         
@@ -867,7 +897,10 @@ Rcpp::List SIDsampler_draws_adaptive_optimized(arma::vec y,
                               Rcpp::Named("Accept_Prop") = accept_MALA,
                               Rcpp::Named("HMC_epsilon") = eps_MALA,
                               Rcpp::Named("IE_penalty") = IE_pen,
+                              Rcpp::Named("IE_penalty_stor") = IE_pen_stor,
                               Rcpp::Named("IE_deltasq") = IE_scale_deltasq,
+                              Rcpp::Named("IE_tausq1") = IE_scale_tausq1,
+                              Rcpp::Named("IE_tausq2") = IE_scale_tausq2,
                               Rcpp::Named("precond_mat_stor") = precond_mat_stor);
   }else{
     
@@ -917,7 +950,7 @@ Rcpp::List SIDsampler_draws_adaptive_optimized(arma::vec y,
       
       //Initialize penalty parameter
       
-      IE_pen(0,k) = 1;
+      IE_pen(0,k) = 10;
       
     }
     
@@ -978,6 +1011,9 @@ Rcpp::List SIDsampler_draws_adaptive_optimized(arma::vec y,
                                                      IE_scale_tausq2(m-1,k),
                                                      SigmaInt,
                                                      SigmaInt);
+          
+          // Rcpp::Rcout << "Fine till here"<< std::endl;
+          // Rcpp::Rcout << rej_pen_stor << std::endl;
           
           /////////// Sample parameters for interaction k
           
@@ -1120,6 +1156,7 @@ Rcpp::List SIDsampler_draws_adaptive_optimized(arma::vec y,
           arma::vec Npart = Npart1 % Npart2;
           
           all_interactions.col(k) = Ppart - Npart; 
+          IE_pen_stor(m,k) = mean(Ppart) * mean(Npart);
           
         }
         
@@ -1255,7 +1292,10 @@ Rcpp::List SIDsampler_draws_adaptive_optimized(arma::vec y,
                               Rcpp::Named("Accept_Prop") = accept_MALA,
                               Rcpp::Named("HMC_epsilon") = eps_MALA,
                               Rcpp::Named("IE_penalty") = IE_pen,
+                              Rcpp::Named("IE_penalty_stor") = IE_pen_stor,
                               Rcpp::Named("IE_deltasq") = IE_scale_deltasq,
+                              Rcpp::Named("IE_tausq1") = IE_scale_tausq1,
+                              Rcpp::Named("IE_tausq2") = IE_scale_tausq2,
                               Rcpp::Named("precond_mat_stor") = precond_mat_stor);
     
   }

@@ -1,4 +1,4 @@
-# Synergistic Interaction Modeling (Beta Version)
+# Synergistic Interaction Modeling
 Implements the Synergistic Interaction Modeling (SIM) framework.
 
 # Abstract
