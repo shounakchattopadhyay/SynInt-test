@@ -5,6 +5,10 @@ random_gamma <- function(a) {
     .Call(`_SynIntTest_random_gamma`, a)
 }
 
+rejection_sampler <- function(X1, X2, pen_param, delta_sq, tau1sq, tau2sq, cov1, cov2) {
+    .Call(`_SynIntTest_rejection_sampler`, X1, X2, pen_param, delta_sq, tau1sq, tau2sq, cov1, cov2)
+}
+
 sigmasq_sampler <- function(R, n) {
     .Call(`_SynIntTest_sigmasq_sampler`, R, n)
 }
@@ -13,19 +17,19 @@ maineffects_sampler <- function(R, X, Psi_inv, sigma_sq) {
     .Call(`_SynIntTest_maineffects_sampler`, R, X, Psi_inv, sigma_sq)
 }
 
-pot_MALA <- function(R, X1, X2, param, S1, S2, sigma_sq, delta_sq, pen_param) {
-    .Call(`_SynIntTest_pot_MALA`, R, X1, X2, param, S1, S2, sigma_sq, delta_sq, pen_param)
+pot_MALA <- function(R, X1, X2, param, S1, S2, sigma_sq, delta_sq, rej_pen) {
+    .Call(`_SynIntTest_pot_MALA`, R, X1, X2, param, S1, S2, sigma_sq, delta_sq, rej_pen)
 }
 
-grad_MALA <- function(R, X1, X2, param, S1, S2, sigma_sq, delta_sq, pen_param) {
-    .Call(`_SynIntTest_grad_MALA`, R, X1, X2, param, S1, S2, sigma_sq, delta_sq, pen_param)
+grad_MALA <- function(R, X1, X2, param, S1, S2, sigma_sq, delta_sq, rej_pen) {
+    .Call(`_SynIntTest_grad_MALA`, R, X1, X2, param, S1, S2, sigma_sq, delta_sq, rej_pen)
 }
 
-sq_sampler <- function(R, X1, X2, S1, S2, sigma_sq, delta_sq, old_param, eps_MALA, precond_mat, precond_mat_inv, L_HMC, pen_param) {
-    .Call(`_SynIntTest_sq_sampler`, R, X1, X2, S1, S2, sigma_sq, delta_sq, old_param, eps_MALA, precond_mat, precond_mat_inv, L_HMC, pen_param)
+sq_sampler <- function(R, X1, X2, S1, S2, sigma_sq, delta_sq, old_param, eps_MALA, precond_mat, precond_mat_inv, L_HMC, rej_pen) {
+    .Call(`_SynIntTest_sq_sampler`, R, X1, X2, S1, S2, sigma_sq, delta_sq, old_param, eps_MALA, precond_mat, precond_mat_inv, L_HMC, rej_pen)
 }
 
-SIDsampler_draws_adaptive_optimized <- function(y, ME_mat, IE_list, eps_MALA, c_HMC, L_HMC, MC, n, p, p_cov, SigmaME, SigmaME_inv, SigmaInt, SigmaInt_inv, ME_nspl, IE_nspl, cutoff, map_k_to_uv, zero_ind, accept_low, accept_high, accept_scale, a_lamb, b_lamb, init_values, precond, pen_param) {
-    .Call(`_SynIntTest_SIDsampler_draws_adaptive_optimized`, y, ME_mat, IE_list, eps_MALA, c_HMC, L_HMC, MC, n, p, p_cov, SigmaME, SigmaME_inv, SigmaInt, SigmaInt_inv, ME_nspl, IE_nspl, cutoff, map_k_to_uv, zero_ind, accept_low, accept_high, accept_scale, a_lamb, b_lamb, init_values, precond, pen_param)
+SIDsampler_draws_adaptive_optimized <- function(y, ME_mat, IE_list, eps_MALA, c_HMC, L_HMC, MC, n, p, p_cov, SigmaME, SigmaME_inv, SigmaInt, SigmaInt_inv, ME_nspl, IE_nspl, cutoff, map_k_to_uv, zero_ind, accept_low, accept_high, accept_scale, a_lamb, b_lamb, init_values, precond) {
+    .Call(`_SynIntTest_SIDsampler_draws_adaptive_optimized`, y, ME_mat, IE_list, eps_MALA, c_HMC, L_HMC, MC, n, p, p_cov, SigmaME, SigmaME_inv, SigmaInt, SigmaInt_inv, ME_nspl, IE_nspl, cutoff, map_k_to_uv, zero_ind, accept_low, accept_high, accept_scale, a_lamb, b_lamb, init_values, precond)
 }
 
