@@ -25,6 +25,7 @@ arma::vec rejection_sampler(arma::mat X1,
   
   int mask = 0;
   int M = X1.n_cols;
+  // int rej_len = 0;
   arma::vec penalty_stor(1, fill::zeros);
   penalty_stor(0) = -1;                 //First element, to be discarded later
   arma::vec mean_vec(M, fill::zeros);
@@ -37,8 +38,8 @@ arma::vec rejection_sampler(arma::mat X1,
   while(mask == 0){
     
     arma::vec theta1 = mvnrnd(mean_vec, C1, 1);
-    arma::vec theta2 = mvnrnd(mean_vec, C2, 1);
-    arma::vec phi1 = mvnrnd(mean_vec, C1, 1);
+    arma::vec theta2 = mvnrnd(mean_vec, C1, 1);
+    arma::vec phi1 = mvnrnd(mean_vec, C2, 1);
     arma::vec phi2 = mvnrnd(mean_vec, C2, 1);
     
     arma::vec Pfn1 = square(X1 * theta1);
@@ -482,8 +483,8 @@ Rcpp::List SIDsampler_draws_adaptive_optimized(arma::vec y,
   arma::mat IE_scale_a(MC, K, fill::ones);
   arma::mat IE_scale_b(MC, K, fill::ones);
   
-  IE_scale_tausq1.row(0) = 0.01 * IE_scale_tausq1.row(0);
-  IE_scale_tausq2.row(0) = 0.01 * IE_scale_tausq2.row(0);
+  // IE_scale_tausq1.row(0) = 0.01 * IE_scale_tausq1.row(0);
+  // IE_scale_tausq2.row(0) = 0.01 * IE_scale_tausq2.row(0);
   
   arma::vec IE_scale_deltasq(MC, fill::ones);
   arma::vec IE_scale_nu(MC, fill::ones);
