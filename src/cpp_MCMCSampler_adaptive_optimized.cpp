@@ -482,6 +482,9 @@ Rcpp::List SIDsampler_draws_adaptive_optimized(arma::vec y,
   arma::mat IE_scale_a(MC, K, fill::ones);
   arma::mat IE_scale_b(MC, K, fill::ones);
   
+  IE_scale_tausq1.row(0) = 0.01 * IE_scale_tausq1.row(0);
+  IE_scale_tausq2.row(0) = 0.01 * IE_scale_tausq2.row(0);
+  
   arma::vec IE_scale_deltasq(MC, fill::ones);
   arma::vec IE_scale_nu(MC, fill::ones);
   
