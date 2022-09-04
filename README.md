@@ -1,4 +1,4 @@
-# Synergistic Interaction Modeling
+# Synergistic Interaction Modeling (Beta)
 Implements the Synergistic Interaction Modeling (SIM) framework.
 
 # Abstract
@@ -18,3 +18,5 @@ Next, install the package:
 library(devtools)
 install_github("shounakchattopadhyay/SynInt")
 ```
+
+# Beta version uses rejection sampling to sample the penalty parameter. Refer to https://arxiv.org/abs/1406.6652.
