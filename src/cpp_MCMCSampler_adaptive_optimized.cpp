@@ -35,7 +35,7 @@ arma::vec rejection_sampler(arma::mat X1,
   
   mask = 0;                           //Define mask variable for rejection sampling
   
-  while((mask == 0) | (rej_len <= 100)){
+  while((mask == 0) & (rej_len <= 1000)){
     
     rej_len = rej_len + 1;
     
