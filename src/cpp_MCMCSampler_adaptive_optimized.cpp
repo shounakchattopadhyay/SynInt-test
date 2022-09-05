@@ -25,7 +25,7 @@ arma::vec rejection_sampler(arma::mat X1,
   
   int mask = 0;
   int M = X1.n_cols;
-  // int rej_len = 0;
+  int rej_len = 0;
   arma::vec penalty_stor(1, fill::zeros);
   penalty_stor(0) = -1;                 //First element, to be discarded later
   arma::vec mean_vec(M, fill::zeros);
@@ -36,6 +36,8 @@ arma::vec rejection_sampler(arma::mat X1,
   mask = 0;                           //Define mask variable for rejection sampling
   
   while(mask == 0){
+    
+    rej_len = rej_len + 1;
     
     arma::vec theta1 = mvnrnd(mean_vec, C1, 1);
     arma::vec theta2 = mvnrnd(mean_vec, C1, 1);
@@ -68,6 +70,8 @@ arma::vec rejection_sampler(arma::mat X1,
       mask = 1;
       
     }
+    
+    Rcpp::Rcout << "Rejection Length = " << rej_len << std::endl;
     
   }
   
