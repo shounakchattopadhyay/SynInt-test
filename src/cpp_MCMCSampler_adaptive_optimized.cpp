@@ -694,12 +694,14 @@ Rcpp::List SIDsampler_draws_adaptive_optimized(arma::vec y,
               
               if(precond == 1){
                 
-                arma::mat precond_woburnin = grad_sample_stor.slice(k).rows(1000, m-1);
+                // arma::mat precond_woburnin = grad_sample_stor.slice(k).rows(1000, m-1);
+                // 
+                // arma::vec precond_mat_mean = mean(precond_woburnin, 0).t();
+                // 
+                // precond_mat_stor.slice(k) = ((precond_woburnin.t() * precond_woburnin) / m) -
+                //   (precond_mat_mean * precond_mat_mean.t());
                 
-                arma::vec precond_mat_mean = mean(precond_woburnin, 0).t();
-                
-                precond_mat_stor.slice(k) = ((precond_woburnin.t() * precond_woburnin) / m) -
-                  (precond_mat_mean * precond_mat_mean.t());
+                precond_mat_stor.slice(k) = cov(grad_sample_stor.slice(k).rows(1000, m-1));
                 
                 precond_mat_inv_stor.slice(k) = inv_sympd(precond_mat_stor.slice(k) +
                   (0.01 * eye(n_HMC_param, n_HMC_param)));
@@ -1090,12 +1092,14 @@ Rcpp::List SIDsampler_draws_adaptive_optimized(arma::vec y,
               
               if(precond == 1){
                 
-                arma::mat precond_woburnin = grad_sample_stor.slice(k).rows(1000, m-1);
+                // arma::mat precond_woburnin = grad_sample_stor.slice(k).rows(1000, m-1);
+                // 
+                // arma::vec precond_mat_mean = mean(precond_woburnin, 0).t();
+                // 
+                // precond_mat_stor.slice(k) = ((precond_woburnin.t() * precond_woburnin) / m) -
+                //   (precond_mat_mean * precond_mat_mean.t());
                 
-                arma::vec precond_mat_mean = mean(precond_woburnin, 0).t();
-                
-                precond_mat_stor.slice(k) = ((precond_woburnin.t() * precond_woburnin) / m) -
-                  (precond_mat_mean * precond_mat_mean.t());
+                precond_mat_stor.slice(k) = cov(grad_sample_stor.slice(k).rows(1000, m-1));
                 
                 precond_mat_inv_stor.slice(k) = inv_sympd(precond_mat_stor.slice(k) +
                   (0.01 * eye(n_HMC_param, n_HMC_param)));
